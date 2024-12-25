@@ -1,11 +1,11 @@
-package Managers 
+package Domain 
 
 import (
   "fmt"
   "os"
   "sync"
   "regexp"
-  "errors"
+  // "errors"
 
   "Requester/Interfaces"
   "Requester/Controllers"
@@ -33,7 +33,7 @@ func Worker(id int, Requests <-chan Interfaces.Request, wg *sync.WaitGroup){
     // Create a dir for every valid URL to save data related
     dir := string(match[1])
     dirPath := fmt.Sprintf("./Results/Responses/%s", dir)
-    
+
     // Eval if already exist the Directory
     dirExist := Controllers.DirectoryExists(dirPath)
     if dirExist == false {
@@ -46,7 +46,7 @@ func Worker(id int, Requests <-chan Interfaces.Request, wg *sync.WaitGroup){
     // If exist continue with the request URL
     // Do the request
     Request.RequestURL()
-    
+
     // Eval if the response is valid  
     if Request.Err == nil && Request.Code != 0 && Request.Response.Body != nil{
       // Filter by Code
@@ -109,93 +109,93 @@ func RequestAll(file string) error {
   fmt.Printf("\nWorkersDone")
   return nil
 }
-
-func ExtractSources(findOn string)([][]string, error){
-  re := regexp.MustCompile(`src=["']([^"']+)["']`)
-  elements, err := Controllers.Extract(*re, findOn)
-  if err != nil{
-    return nil, err
-  }else {
-    if len(elements) > 1 {
-      return elements, nil
-    }
-  }
-  err = errors.New("No Matches Found")
-  return nil, err
-}
-
-func ExtractComments(findOn string)([][]string, error){
-  
-  re := regexp.MustCompile(`<!--(.*?)-->`)
-  elements, err := Controllers.Extract(*re, findOn)
-  if err != nil{
-    return nil, err
-  }else {
-    if len(elements) > 1 {
-      return elements, nil
-    }
-  }
-  err = errors.New("No Matches Found")
-  return nil, err
-}
-
-func ExtractAllForFile(Path string) (Interfaces.FileData, error){
-  var FileData Interfaces.FileData
-  var src []string
-  var cmt []string
-
-  content, err := Controllers.FContentReader(Path)
-  if err != nil {
-    return FileData, err
-  }
-
-  sources, err1 := ExtractSources(content)
-  comments, err2 := ExtractComments(content)
-  switch {
-  case err1 != nil && err2 != nil:
-    err := errors.New("No sources and no contents found")
-    return FileData, err
-  case err1 != nil && err2 == nil :
-    for _, element := range comments{
-      cmt = append(cmt, element[1])
-    }
-  case err1 == nil && err2 != nil :
-
-    for _, element := range sources{
-      src = append(src, element[1])
-    }
-  }
-  for _, element := range sources {
-    src = append(src, element[1])
-  }
-  for _, element := range comments{
-    cmt = append(cmt, element[1])
-  } 
-  // case err1 == nil && err2 == nil :
-  FileData.Sources = src 
-  FileData. Comments = cmt 
-  return FileData, nil 
-}
-
-func ExtractAllForDir(Request Interfaces.Request) ([]Interfaces.FileData, error){
-  var FilesData []Interfaces.FileData
-
-  files, err := os.ReadDir(Request.Dir)
-  if err != nil {
-    return FilesData, err
-	}
-  for _, file := range files {
-		if file.IsDir() {
-      continue
-		} else {
-      path := fmt.Sprintf("%s/%v", Request.Dir, file) 
-      FileData, err := ExtractAllForFile(path)
-      if err != nil {
-        continue
-      }
-      FileData.Dir = Request.Dir 
-      FilesData = append(FilesData, FileData) 
-		}
-  }
-  return FilesData, nil 
-}
+//
+// func ExtractSources(findOn string)([][]string, error){
+//   re := regexp.MustCompile(`src=["']([^"']+)["']`)
+//   elements, err := Controllers.Extract(*re, findOn)
+//   if err != nil{
+//     return nil, err
+//   }else {
+//     if len(elements) > 1 {
+//       return elements, nil
+//     }
+//   }
+//   err = errors.New("No Matches Found")
+//   return nil, err
+// }
+//
+// func ExtractComments(findOn string)([][]string, error){
+//
+//   re := regexp.MustCompile(`<!--(.*?)-->`)
+//   elements, err := Controllers.Extract(*re, findOn)
+//   if err != nil{
+//     return nil, err
+//   }else {
+//     if len(elements) > 1 {
+//       return elements, nil
+//     }
+//   }
+//   err = errors.New("No Matches Found")
+//   return nil, err
+// }
+//
+// func ExtractAllForFile(Path string) (Interfaces.FileData, error){
+//   var FileData Interfaces.FileData
+//   var src []string
+//   var cmt []string
+//
+//   content, err := Controllers.FContentReader(Path)
+//   if err != nil {
+//     return FileData, err
+//   }
+//
+//   sources, err1 := ExtractSources(content)
+//   comments, err2 := ExtractComments(content)
+//   switch {
+//   case err1 != nil && err2 != nil:
+//     err := errors.New("No sources and no contents found")
+//     return FileData, err
+//   case err1 != nil && err2 == nil :
+//     for _, element := range comments{
+//       cmt = append(cmt, element[1])
+//     }
+//   case err1 == nil && err2 != nil :
+//
+//     for _, element := range sources{
+//       src = append(src, element[1])
+//     }
+//   }
+//   for _, element := range sources {
+//     src = append(src, element[1])
+//   }
+//   for _, element := range comments{
+//     cmt = append(cmt, element[1])
+//   } 
+//   // case err1 == nil && err2 == nil :
+//   FileData.Sources = src 
+//   FileData. Comments = cmt 
+//   return FileData, nil 
+// }
+//
+// func ExtractAllForDir(Request Interfaces.Request) ([]Interfaces.data, error){
+//   var FilesData []Interfaces.FileData
+//
+//   files, err := os.ReadDir(Request.Dir)
+//   if err != nil {
+//     return FilesData, err
+// 	}
+//   for _, file := range files {
+// 		if file.IsDir() {
+//       continue
+// 		} else {
+//       path := fmt.Sprintf("%s/%v", Request.Dir, file) 
+//       FileData, err := ExtractAllForFile(path)
+//       if err != nil {
+//         continue
+//       }
+//       FileData.Dir = Request.Dir 
+//       FilesData = append(FilesData, FileData) 
+// 		}
+//   }
+//   return FilesData, nil 
+// }

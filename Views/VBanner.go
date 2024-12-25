@@ -2,9 +2,12 @@ package Views
 
 import (
   "fmt"
-  "Requester/Controllers"
-  // "sync"
+  "errors"
+  "Requester/Interfaces"
+  "Requester/Domain"
+	"github.com/manifoldco/promptui"
 )
+
 var Reset = "\033[0m" 
 var Red = "\033[31m" 
 var Green = "\033[32m" 
@@ -15,39 +18,66 @@ var Cyan = "\033[36m"
 var Gray = "\033[37m" 
 var White = "\033[97m"
 
-func PrintBannerLogo() {
-  lines, err := Controllers.Reader("./Views/bannerLogo.txt")
-  if err != nil {
-    fmt.Printf("\nError:\n%v\n", err)
-    return
-  }
-  for _, line := range lines {
-    println(Magenta + line + Reset)
-  }
-  fmt.Printf("\n")
-}
+var Commands = []string{"RequestAll", "ExtractAll","ExtractSrc", "Help"}
 
-func PrintBannerLet(){
-  lines, err := Controllers.Reader("./Views/bannerLet.txt")
-  if err != nil {
-    fmt.Printf("\nError:\n%v\n", err)
-    return
-  }
-  for _, line := range lines {
-    println(Magenta + line + Reset)
-  }
-  fmt.Printf("\n")
+// func PrintBannerLogo() {
+//   lines, err := Controllers.Reader("./Views/bannerLogo.txt")
+//   if err != nil {
+//     fmt.Printf("\nError:\n%v\n", err)
+//     return
+//   }
+//   for _, line := range lines {
+//     println(Magenta + line + Reset)
+//   }
+//   fmt.Printf("\n")
+// }
+//
+// func PrintBannerLet(){
+//   lines, err := Controllers.Reader("./Views/bannerLet.txt")
+//   if err != nil {
+//     fmt.Printf("\nError:\n%v\n", err)
+//     return
+//   }
+//   for _, line := range lines {
+//     println(Magenta + line + Reset)
+//   }
+//   fmt.Printf("\n")
+//
+// }
+//
 
-}
+func Shell() {
+  var Command Interfaces.Command
+  validate := func(input string) error {
+    for _, Command  := range Commands {
+      if Command == input {
+        return nil
+      } 
+    }
+    err := errors.New("Command Not Found")
+    return err
+    }
+    // Render Current Prompt
+    templates := &promptui.PromptTemplates{
+      Prompt:  "{{ . }} ",
+      Valid:   "{{ . | green }} ",
+      Invalid: "{{ . | red }} ",
+      Success: "{{ . | bold }} ",
+    }
 
-func PrintMenu() string{
+    prompt := promptui.Prompt{
+      Label:     "BKO>",
+      Templates: templates,
+      Validate:  validate,
+    }
 
-  menu := Controllers.NewMenu("Mode")
+    result, err := prompt.Run()
 
-  menu.AddItem("RequestAll", "requestAll")
-  menu.AddItem("FUZZAll", "fuzzAll")
-  
-  choice := menu.Display()
-  return choice
-
+    if err != nil {
+      fmt.Printf("Prompt failed %v\n", err)
+      return
+    }
+  Command.Name = result
+  Command.Arguments = "./TestAliveScope.txt"
+  Domain.CommandSwitcher(Command)
 }
