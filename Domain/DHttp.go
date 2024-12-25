@@ -66,6 +66,12 @@ func Worker(id int, Requests <-chan Interfaces.Request, wg *sync.WaitGroup){
 
 func RequestAll(Command Interfaces.Command) (Interfaces.Command, error) {
   
+  // Verify Argument
+  if Command.Argument == "" {
+    err := errors.New("No File Specified in Argument")
+    return Command, err
+  }
+
   // Verify Results Directory and Responses Directory
    ok := Controllers.DirectoryExists("./Results"); 
    if ok == false {

@@ -4,9 +4,6 @@ import (
   "bufio"
   "fmt"
   "errors" 
-  // "sync"
-
-  // "Requester/Interfaces"
 )
 
 // Create File or Dir

@@ -1,4 +1,4 @@
-package Views
+package View
 
 import (
   "fmt"
@@ -18,7 +18,7 @@ var Cyan = "\033[36m"
 var Gray = "\033[37m" 
 var White = "\033[97m"
 
-var Commands = []string{"RequestAll", "ExtractAll","ExtractSrc", "Help", "SetArg"}
+var Commands = []string{"SetArg", "ShowCommand", "RequestAll", "ExtractAll","ExtractSrc", "Help"}
 
 func PrintBannerLogo() {
   lines, err := Domain.Reader("./Views/bannerLogo.txt")
@@ -46,8 +46,9 @@ func PrintBannerLet(){
 }
 
 
-func Shell() {
-  var Command Interfaces.Command
+
+func Shell(Command Interfaces.Command) {
+
   validate := func(input string) error {
     for _, Command  := range Commands {
       if Command == input {
@@ -57,6 +58,7 @@ func Shell() {
     err := errors.New("Command Not Found")
     return err
     }
+
     // Render Current Prompt
     templates := &promptui.PromptTemplates{
       Prompt:  "{{ . }} ",
@@ -78,7 +80,18 @@ func Shell() {
       return
     }
   Command.Name = result
-  Command.Argument = "./TestAliveScope.txt"
-  Domain.CommandSwitcher(Command)
+  Command, err = Domain.CommandSwitcher(Command)
 
+  if err != nil {
+    informer := fmt.Sprintf("\n\n[!] Error Executing: %s\n%v\nCommand Output: %v\n", Command.Name, err, Command.Output)
+    fmt.Printf(informer)
+  } else if Command.Output != nil {
+    informer := fmt.Sprintf("\n\n[+] Command: %s Executed Correctly\nCommand Output: %v\n", Command.Name, Command.Output)
+    fmt.Printf(informer)
+  } else{
+    informer := fmt.Sprintf("\n\n[+] Command: %s Executed Correctly\n", Command.Name)
+    fmt.Printf(informer)
+  }
+  
+  Shell(Command)
 }
