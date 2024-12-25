@@ -11,6 +11,11 @@ import (
   "Requester/Controllers"
 )
 
+func Reader(fPath string) ([]string, error){
+  res, err := Controllers.Reader(fPath)
+  return res, err
+}
+
 // Write File
 func ResWriter(Request Interfaces.Request) (error){
   resBody, err := ioutil.ReadAll(Request.Response.Body)

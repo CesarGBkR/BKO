@@ -8,8 +8,8 @@ import (
 
 func main(){
 
-  // Views.PrintBannerLogo()
-  // Views.PrintBannerLet()
+  Views.PrintBannerLogo()
+  Views.PrintBannerLet()
   Views.Shell()
 
 } 

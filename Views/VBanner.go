@@ -18,33 +18,33 @@ var Cyan = "\033[36m"
 var Gray = "\033[37m" 
 var White = "\033[97m"
 
-var Commands = []string{"RequestAll", "ExtractAll","ExtractSrc", "Help"}
+var Commands = []string{"RequestAll", "ExtractAll","ExtractSrc", "Help", "SetArg"}
 
-// func PrintBannerLogo() {
-//   lines, err := Controllers.Reader("./Views/bannerLogo.txt")
-//   if err != nil {
-//     fmt.Printf("\nError:\n%v\n", err)
-//     return
-//   }
-//   for _, line := range lines {
-//     println(Magenta + line + Reset)
-//   }
-//   fmt.Printf("\n")
-// }
-//
-// func PrintBannerLet(){
-//   lines, err := Controllers.Reader("./Views/bannerLet.txt")
-//   if err != nil {
-//     fmt.Printf("\nError:\n%v\n", err)
-//     return
-//   }
-//   for _, line := range lines {
-//     println(Magenta + line + Reset)
-//   }
-//   fmt.Printf("\n")
-//
-// }
-//
+func PrintBannerLogo() {
+  lines, err := Domain.Reader("./Views/bannerLogo.txt")
+  if err != nil {
+    fmt.Printf("\nError:\n%v\n", err)
+    return
+  }
+  for _, line := range lines {
+    println(Magenta + line + Reset)
+  }
+  fmt.Printf("\n")
+}
+
+func PrintBannerLet(){
+  lines, err := Domain.Reader("./Views/bannerLet.txt")
+  if err != nil {
+    fmt.Printf("\nError:\n%v\n", err)
+    return
+  }
+  for _, line := range lines {
+    println(Magenta + line + Reset)
+  }
+  fmt.Printf("\n")
+
+}
+
 
 func Shell() {
   var Command Interfaces.Command
@@ -78,6 +78,6 @@ func Shell() {
       return
     }
   Command.Name = result
-  Command.Arguments = "./TestAliveScope.txt"
+  Command.Argument = "./TestAliveScope.txt"
   Domain.CommandSwitcher(Command)
 }

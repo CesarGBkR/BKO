@@ -7,5 +7,6 @@ import (
 
 type Command struct {
   Objects.Command
+  FileData []FileData 
 }
 
