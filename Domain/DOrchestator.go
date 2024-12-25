@@ -1,6 +1,7 @@
 package Domain
 
 import (
+  "fmt"
   "errors"
   "Requester/Interfaces"
 )
@@ -17,8 +18,11 @@ func CommandSwitcher(Command Interfaces.Command)error{
   }
 
   if fn, found := Commands[Command.Name]; found{
-    fn(Command)
-    
+    Command, err :=  fn(Command)
+    if err != nil {
+      fmt.Printf("Error:\n%v", err)
+    }
+    fmt.Printf("%v\n", Command.Output)
   } else {
     err := errors.New("Command Not Found")
     return err

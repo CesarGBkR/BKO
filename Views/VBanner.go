@@ -61,8 +61,8 @@ func Shell() {
     templates := &promptui.PromptTemplates{
       Prompt:  "{{ . }} ",
       Valid:   "{{ . | green }} ",
-      Invalid: "{{ . | red }} ",
-      Success: "{{ . | bold }} ",
+      Invalid: "{{ . | bold | magenta }} ",
+      Success: "{{ . | bold | green }} ",
     }
 
     prompt := promptui.Prompt{
@@ -80,4 +80,5 @@ func Shell() {
   Command.Name = result
   Command.Argument = "./TestAliveScope.txt"
   Domain.CommandSwitcher(Command)
+
 }
