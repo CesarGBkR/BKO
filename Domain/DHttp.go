@@ -2,7 +2,6 @@ package Domain
 
 import (
   "fmt"
-  "os"
   "sync"
   "regexp"
   "errors"
@@ -116,76 +115,4 @@ func RequestAll(Command Interfaces.Command) (Interfaces.Command, error) {
   wg.Wait()
   Command.Output = "Requests Done, Saved on ./Results"
   return Command, nil
-}
-
-func ExtractSources(Command Interfaces.Command)(Interfaces.Command, error){
-  re := regexp.MustCompile(`src=["']([^"']+)["']`)
-  elements, err := Controllers.Extract(*re, Command.Argument)
-  if err != nil{
-    return Command, err
-  }else {
-    if len(elements) > 1 {
-      Command.FileData[0].Sources = elements
-      return Command, nil
-    }
-  }
-  err = errors.New("No Matches Found")
-  return Command, err
-}
-
-func ExtractComments(Command Interfaces.Command)(Interfaces.Command, error){
-
-  re := regexp.MustCompile(`<!--(.*?)-->`)
-  elements, err := Controllers.Extract(*re, Command.Argument)
-  if err != nil{
-    return Command, err
-  }else {
-    if len(elements) > 1 {
-      Command.FileData[0].Comments = elements
-      return Command, nil
-    }
-  }
-  err = errors.New("No Matches Found")
-  return Command, err
-}
-
-func ExtractAllForFile(Command Interfaces.Command) (Interfaces.Command, error){
-  content, err := Controllers.FContentReader(Command.Argument)
-  if err != nil {
-    return Command, err
-  }
-  Command.Argument = content  
-  Command, err1 := ExtractSources(Command)
-  Command, err2 := ExtractComments(Command)
-  switch {
-  case err1 != nil && err2 != nil:
-    err := errors.New("No sources and no comments found")
-    return Command, err
-  case err1 != nil && err2 == nil :
-    err := errors.New("No sources found")
-    return Command, err 
-  case err1 == nil && err2 != nil :
-    err := errors.New("No conmments found")
-    return Command, err 
-  }
-  return Command, nil 
-}
-
-func ExtractAllForDir(Command Interfaces.Command) (Interfaces.Command, error){
-
-  files, err := os.ReadDir(Command.Argument)
-  if err != nil {
-    return Command, err
-	}
-  for _, file := range files {
-		if file.IsDir() {
-      continue
-		} else {
-      path := fmt.Sprintf("%s/%v", Command.Argument, file) 
-      Command.Argument = path
-      Command, err := ExtractAllForFile(Command)
-      return Command, err
-		}
-  }
-  return Command, nil 
 }

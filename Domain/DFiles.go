@@ -2,10 +2,12 @@ package Domain
 
 import (
   "fmt"
+  "os"
   "io/ioutil"
   "regexp"
   "strings"
   "errors"
+  "time"
 
   "Requester/Interfaces"
   "Requester/Controllers"
@@ -42,4 +44,156 @@ func ResWriter(Request Interfaces.Request) (error){
     return err
   }
   return nil
+}
+
+func ExtractSources(Command Interfaces.Command)(Interfaces.Command, error){
+  re := regexp.MustCompile(`src=["']([^"']+)["']`)
+  elements, err := Controllers.Extract(*re, Command.Argument)
+  if err != nil{
+    return Command, err
+  }else {
+    if len(elements) > 1 {
+      var Data Interfaces.FileData
+      Data.Sources = elements
+      Command.FileData = append(Command.FileData, Data) 
+      return Command, nil
+    }
+  }
+  err = errors.New("No Matches Found")
+  return Command, err
+}
+
+func ExtractComments(Command Interfaces.Command)(Interfaces.Command, error){
+
+  re := regexp.MustCompile(`<!--(.*?)-->`)
+  elements, err := Controllers.Extract(*re, Command.Argument)
+  if err != nil{
+    return Command, err
+  }else {
+    if len(elements) > 1 {
+      var Data Interfaces.FileData
+      Data.Sources = elements
+      Command.FileData = append(Command.FileData, Data) 
+      return Command, nil    }
+  }
+  err = errors.New("No Matches Found")
+  return Command, err
+}
+
+func ExtractAllForFile(Command Interfaces.Command) (Interfaces.Command, error){
+  
+  // Verify Argument
+  if Command.Argument == "" {
+    err := errors.New("No File Specified in Argument")
+    return Command, err
+  }
+  DirCommand := Command.Argument 
+  content, err := Controllers.FContentReader(Command.Argument)
+  if err != nil {
+    return Command, err
+  }
+  Command.Argument = content  
+  Command, err1 := ExtractSources(Command)
+  Command, err2 := ExtractComments(Command)
+  
+  Command.Argument = DirCommand
+  // TODO:  Validation of existence of Dir and file
+  Dir :=  fmt.Sprintf("Results/Responses/%s", Command.Argument)
+  cDir := fmt.Sprintf("./%s/comments.txt", Dir ) 
+  sDir := fmt.Sprintf("./%s/sources.txt", Dir) 
+
+  if exist := Controllers.DirectoryExists(Dir); exist == false {
+    err = Controllers.CreateFile(Dir)
+    if err != nil {
+      sErr := fmt.Sprintf("Error Creating Directory ./Results/Response/%s/\nError:\n%v", Command.Argument, err)
+      err = errors.New(sErr)
+      return Command, err
+    }
+  }
+  
+  if exist := Controllers.FileExists(cDir); exist == true {
+    currentTime := time.Now()
+    id := fmt.Sprintf("%d%d%d%d%d", currentTime.Month(), currentTime.Day(), currentTime.Hour(), currentTime.Minute, currentTime.Second()) 
+    tmpV := fmt.Sprintf("./%s/%s_comments.txt", Dir, id)
+    cDir = tmpV
+  }
+  
+  if exist := Controllers.FileExists(sDir); exist == true {
+    currentTime := time.Now()
+    id := fmt.Sprintf("%d%d%d%d%d", currentTime.Month(), currentTime.Day(), currentTime.Hour(), currentTime.Minute, currentTime.Second())
+    
+    tmpV := fmt.Sprintf("./%s/%s_sources.txt", Dir, id)
+    sDir = tmpV
+  }
+
+
+
+  var Cmnts string 
+  var Srcs string
+
+  switch {
+  case err1 != nil && err2 != nil:
+    err := errors.New("[i] No sources and no comments found")
+    return Command, err
+  
+  case err1 != nil && err2 == nil :
+    for _, FileData := range Command.FileData {
+      for _, Comment := range FileData.Comments {
+        Cmnts = fmt.Sprintf("%s\n%s", Cmnts, Comment[1])
+      }
+    }
+    fmt.Printf("[i] No sources found")
+  case err1 == nil && err2 != nil :
+    for _, FileData := range Command.FileData {
+      for _, Sources := range FileData.Sources {
+        Srcs = fmt.Sprintf("%s\n%s", Srcs, Sources[1])
+      }
+    }
+    fmt.Printf("[i] No conmments found")
+  }
+  for _, FileData := range Command.FileData {
+    for _, Comment := range FileData.Comments {
+        Cmnts = fmt.Sprintf("%s\n%s", Cmnts, Comment[1])
+    }
+    for _, Sources := range FileData.Sources {
+        Srcs = fmt.Sprintf("%s\n%s", Srcs, Sources[1])
+    }
+  }
+  err = Controllers.Writer(cDir, []byte(Cmnts))   
+  if err != nil {
+    fmt.Printf("[i] Error Saving Comments")
+  }
+  fmt.Printf("\n[i] Comments Saved On %s\n",cDir)
+  
+  err = Controllers.Writer(sDir, []byte(Srcs))   
+  if err != nil {
+    fmt.Printf("[i] Error Saving Sources")
+  }
+  fmt.Printf("\n[i] Sources Saved On %s\n",sDir)
+
+  return Command, nil 
+}
+
+func ExtractAllForDir(Command Interfaces.Command) (Interfaces.Command, error){
+  
+  // Verify Argument
+  if Command.Argument == "" {
+    err := errors.New("[i] No Dir Specified in Argument")
+    return Command, err
+  }
+  files, err := os.ReadDir(Command.Argument)
+  if err != nil {
+    return Command, err
+	}
+  for _, file := range files {
+		if file.IsDir() {
+      continue
+		} else {
+      path := fmt.Sprintf("%s/%v", Command.Argument, file) 
+      Command.Argument = path
+      Command, err := ExtractAllForFile(Command)
+      return Command, err
+		}
+  }
+  return Command, nil 
 }

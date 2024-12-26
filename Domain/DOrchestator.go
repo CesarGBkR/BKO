@@ -58,7 +58,7 @@ func CommandSwitcher(Command Interfaces.Command)(Interfaces.Command, error){
   "ExtractAllForFile": ExtractAllForFile,
   "ExtractAllForDir": ExtractAllForDir,
   "ExtractComments": ExtractComments,
-  "wrappedExtractSources": ExtractSources,
+  "ExtractSources": ExtractSources,
   }
 
   if fn, found := Commands[Command.Name]; found{

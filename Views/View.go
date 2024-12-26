@@ -18,7 +18,8 @@ var Cyan = "\033[36m"
 var Gray = "\033[37m" 
 var White = "\033[97m"
 
-var Commands = []string{"SetArg", "ShowCommand", "RequestAll", "ExtractAll","ExtractSrc", "Help"}
+var Commands = []string{"Help", "SetArg", "ShowCommand", "RequestAll", "ExtractAllForFile",
+"ExtractAllForDir" ,"ExtractAll","ExtractSources", "ExtractComments"}
 
 func PrintBannerLogo() {
   lines, err := Domain.Reader("./Views/bannerLogo.txt")
