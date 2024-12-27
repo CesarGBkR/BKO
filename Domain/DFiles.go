@@ -48,7 +48,7 @@ func ResWriter(Request Interfaces.Request) (error){
 
 func ExtractSources(Command Interfaces.Command)(Interfaces.Command, error){
   re := regexp.MustCompile(`src=["']([^"']+)["']`)
-  elements, err := Controllers.Extract(*re, Command.Argument)
+  elements, err := Controllers.Extract(*re, Command.Arguments[0])
   if err != nil{
     return Command, err
   }else {
@@ -66,7 +66,7 @@ func ExtractSources(Command Interfaces.Command)(Interfaces.Command, error){
 func ExtractComments(Command Interfaces.Command)(Interfaces.Command, error){
 
   re := regexp.MustCompile(`<!--(.*?)-->`)
-  elements, err := Controllers.Extract(*re, Command.Argument)
+  elements, err := Controllers.Extract(*re, Command.Arguments[0])
   if err != nil{
     return Command, err
   }else {
@@ -83,29 +83,29 @@ func ExtractComments(Command Interfaces.Command)(Interfaces.Command, error){
 func ExtractAllForFile(Command Interfaces.Command) (Interfaces.Command, error){
   
   // Verify Argument
-  if Command.Argument == "" {
+  if Command.Arguments[0] == "" {
     err := errors.New("No File Specified in Argument")
     return Command, err
   }
-  DirCommand := Command.Argument 
-  content, err := Controllers.FContentReader(Command.Argument)
+  DirCommand := Command.Arguments[0] 
+  content, err := Controllers.FContentReader(Command.Arguments[0])
   if err != nil {
     return Command, err
   }
-  Command.Argument = content  
+  Command.Arguments[0] = content  
   Command, err1 := ExtractSources(Command)
   Command, err2 := ExtractComments(Command)
   
-  Command.Argument = DirCommand
+  Command.Arguments[0] = DirCommand
   // TODO:  Validation of existence of Dir and file
-  Dir :=  fmt.Sprintf("Results/Responses/%s", Command.Argument)
+  Dir :=  fmt.Sprintf("Results/Responses/%s", Command.Arguments[0])
   cDir := fmt.Sprintf("./%s/comments.txt", Dir ) 
   sDir := fmt.Sprintf("./%s/sources.txt", Dir) 
 
   if exist := Controllers.DirectoryExists(Dir); exist == false {
     err = Controllers.CreateFile(Dir)
     if err != nil {
-      sErr := fmt.Sprintf("Error Creating Directory ./Results/Response/%s/\nError:\n%v", Command.Argument, err)
+      sErr := fmt.Sprintf("Error Creating Directory ./Results/Response/%s/\nError:\n%v", Command.Arguments[0], err)
       err = errors.New(sErr)
       return Command, err
     }
@@ -177,11 +177,11 @@ func ExtractAllForFile(Command Interfaces.Command) (Interfaces.Command, error){
 func ExtractAllForDir(Command Interfaces.Command) (Interfaces.Command, error){
   
   // Verify Argument
-  if Command.Argument == "" {
+  if Command.Arguments[0] == "" {
     err := errors.New("[i] No Dir Specified in Argument")
     return Command, err
   }
-  files, err := os.ReadDir(Command.Argument)
+  files, err := os.ReadDir(Command.Arguments[0])
   if err != nil {
     return Command, err
 	}
@@ -189,8 +189,8 @@ func ExtractAllForDir(Command Interfaces.Command) (Interfaces.Command, error){
 		if file.IsDir() {
       continue
 		} else {
-      path := fmt.Sprintf("%s/%v", Command.Argument, file) 
-      Command.Argument = path
+      path := fmt.Sprintf("%s/%v", Command.Arguments[0], file) 
+      Command.Arguments[0] = path
       Command, err := ExtractAllForFile(Command)
       return Command, err
 		}

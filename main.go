@@ -1,17 +1,15 @@
 package main
 
 import (
-  "Requester/Views"
-  "Requester/Interfaces"
+  "Requester/View"
 )
 
   
 
 func main(){
-  var Command Interfaces.Command
-
+  
   View.PrintBannerLogo()
   View.PrintBannerLet()
-  View.Shell(Command)
+  View.IShell()
 
 } 

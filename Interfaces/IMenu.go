@@ -1,12 +1,28 @@
 package Interfaces
 
-import (
-  // "errors"
-  "Requester/Objects"
-)
 
 type Command struct {
-  Objects.Command
-  FileData []FileData 
+    Name     string
+    Help string
+    Func func()
+    Arguments []string
+    Output interface{}
+    Error error
+    FileData []FileData 
+}
+
+var Commands = []Command{
+
+  {Name: "Help", Help: ""},
+  {Name: "Exit", Help: ""},
+  {Name: "SetArg", Help: "Set Argument For Command To Exec"},
+  {Name: "ShowCommand", Help: "Show Actuall Command Structure"},
+  {Name: "RequestAll", Help: "Request All URLS in File"},
+  {Name: "ExtractAllForFile", Help: "Extract Comments and Sources by File"},
+  {Name: "ExtractAllForDir", Help: "Extract Comments and Sources by every File in Dir"},
+  {Name: "ExtractAll", Help: "Extract Comments and Sources in Argument"},
+  {Name: "ExtractSources", Help: "Extract Sources in Argument"},
+  {Name: "ExtractComments", Help: "Extract Comments in Argument"},
+
 }
 

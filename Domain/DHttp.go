@@ -66,7 +66,7 @@ func Worker(id int, Requests <-chan Interfaces.Request, wg *sync.WaitGroup){
 func RequestAll(Command Interfaces.Command) (Interfaces.Command, error) {
   
   // Verify Argument
-  if Command.Argument == "" {
+  if Command.Arguments[0] == "" {
     err := errors.New("No File Specified in Argument")
     return Command, err
   }
@@ -92,7 +92,7 @@ func RequestAll(Command Interfaces.Command) (Interfaces.Command, error) {
   cRequests:=  make(chan Interfaces.Request) 
   
   // Read file with URLs to Request
-  URLS, err := Controllers.Reader(Command.Argument)
+  URLS, err := Controllers.Reader(Command.Arguments[0])
 
   if err != nil {
     serr :=  fmt.Sprintf("Error:\n%v", err)
