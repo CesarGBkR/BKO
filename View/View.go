@@ -57,6 +57,7 @@ func IShell(){
     shell.AddCmd(&ishell.Cmd{
       Name: Command.Name,
       Help: Command.Help,
+      LongHelp: Command.LongHelp,
       Func: func(c *ishell.Context) {
         if len(c.Args) > 0 {
           for _, arg := range c.Args {
@@ -67,10 +68,7 @@ func IShell(){
         _, err := Domain.CommandSwitcher(Command) 
 
         if err != nil {
-          informer := fmt.Sprintf("\n\n[!] Error Executing: %s\n%v\nCommand Output: %v\n", Command.Name, err, Command.Output)
-          c.Printf(informer)
-        } else if Command.Output != nil {
-          informer := fmt.Sprintf("\n\n[+] Command: %s Executed Correctly\nCommand Output: %v\n", Command.Name, Command.Output)
+          informer := fmt.Sprintf("\n\n[!] Error Executing: %s\n%v", Command.Name, err)
           c.Printf(informer)
         } else{
           informer := fmt.Sprintf("\n\n[+] Command: %s Executed Correctly\n", Command.Name)
