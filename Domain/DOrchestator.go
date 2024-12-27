@@ -25,7 +25,6 @@ func ShowCommand(Command Interfaces.Command)(Interfaces.Command, error){
 func CommandSwitcher(Command Interfaces.Command)(Interfaces.Command, error){
 
  var Commands = map[string]func(Command Interfaces.Command) (Interfaces.Command, error) {
-  "SetArg": SetArg, 
   "ShowCommand": ShowCommand,
   "RequestAll": RequestAll, 
   "ExtractAllForFile": ExtractAllForFile,

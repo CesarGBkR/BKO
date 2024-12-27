@@ -15,7 +15,6 @@ var Commands = []Command{
 
   {Name: "Help", Help: ""},
   {Name: "Exit", Help: ""},
-  {Name: "SetArg", Help: "Set Argument For Command To Exec"},
   {Name: "ShowCommand", Help: "Show Actuall Command Structure"},
   {Name: "RequestAll", Help: "Request All URLS in File"},
   {Name: "ExtractAllForFile", Help: "Extract Comments and Sources by File"},
