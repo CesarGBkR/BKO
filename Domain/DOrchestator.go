@@ -10,8 +10,8 @@ func ShowCommand(Command Interfaces.Command)(Interfaces.Command, error){
   if Command.Name != "" {
     fmt.Printf("Command: \n%s\n", Command.Name)
   }
-  if Command.Arguments[0] != "" {
-    fmt.Printf("Argument: \n%s\n", Command.Arguments[0])
+  if Command.ArgumentsRaw[0] != "" {
+    fmt.Printf("Argument: \n%s\n", Command.ArgumentsRaw[0])
   }
   if Command.Error != nil{
     fmt.Printf("\n\t%v\n", Command.Error)
@@ -26,6 +26,7 @@ func CommandSwitcher(Command Interfaces.Command)(Interfaces.Command, error){
   "RequestAll": RequestAll, 
   "ExtractAllForFile": ExtractAllForFile,
   "ExtractAllForDir": ExtractAllForDir,
+  "FUZZ": FUZZ,
   // "ExtractComments": ExtractComments,
   // "ExtractSources": ExtractSources,
   }
@@ -42,5 +43,3 @@ func CommandSwitcher(Command Interfaces.Command)(Interfaces.Command, error){
   }
   return Command, nil 
 }
-
-

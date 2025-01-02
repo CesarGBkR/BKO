@@ -59,12 +59,25 @@ func IShell(){
       Help: Command.Help,
       LongHelp: Command.LongHelp,
       Func: func(c *ishell.Context) {
+        var Arguments map[string]string
+
         if len(c.Args) > 0 {
-          for _, arg := range c.Args {
-            Command.Arguments = append(Command.Arguments, arg)
-          }
+          Command.ArgumentsRaw := c.Args  
+        } else {
+          serr := fmt.Sprintf("\n[i]No Arguments For Command")
+          err := errors.New(serr)
+          informer := fmt.Sprintf("\n\n[!] Error Executing: %s\n%v", Command.Name, err)
+          c.Printf(informer)
+          return
         }
-        Command.Arguments = append(Command.Arguments, "")
+        if err := Domain.ValidateAllArguments(Command); err != nil {
+          informer := fmt.Sprintf("\n\n[!] Error Executing: %s\n%v", Command.Name, err)
+          c.Printf(informer)
+          return
+        }
+        for i, Argument := COmmand.ArgumentsRaw {
+          Arguments[Argument] = Argument[i+1]
+        }
         _, err := Domain.CommandSwitcher(Command) 
 
         if err != nil {

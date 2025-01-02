@@ -7,17 +7,22 @@ import (
 
 type Request struct {
   Objects.Request
+  Objects.Response 
 
 }
 
-func (r Request) RequestURL() {
-    res, err := Controllers.RequestURL(r.URL)
-    if err != nil {
-      r.Err = err
-    }
-    r.Code = res.StatusCode
-    r.Response = res
+func (r *Request) RequestURL() {
 
+    res, err := Controllers.RequestURL(r.Method, r.URL)
+    if err != nil {
+      r.Err = err 
+    }
+    Response := &Objects.Response{
+      Code: res.StatusCode,
+      ContentLength: res.ContentLength, 
+      RawBody: res.Body,
+    }
+    r.Response = *Response
 }
 
 func (r Request) DirectoryExist() {
@@ -35,3 +40,4 @@ func (r Request) CreateFile() {
 func (r Request) ResWitter() {
   // Controllers.ResWitter(r)
 }
+

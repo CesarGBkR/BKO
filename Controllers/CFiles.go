@@ -6,6 +6,40 @@ import (
   "errors" 
 )
 
+func ValidateFileArguments(Args []string) error {
+  if len(Args) < 0 {
+    err := errors.New("\n [i] No Arguments To eval")
+    return err 
+  }
+  for i, Arg := range Args {
+    switch Arg {
+      case "-w" :
+        if Args[i+1] == "" {
+          err := errors.New("\n[i] No File Specified in Argument")
+          return err
+        }else if FileExists(Args[i+1]) == false {
+          sErr := fmt.Sprintf("\n[i] File For Argument: %s Not Found", Arg) 
+          err := errors.New(sErr)
+          return err
+        } 
+       
+      case "-d" :
+        if Args[i+1] == "" {
+          err := errors.New("\n[i] No File Specified in Argument")
+          return err
+        }else if FileExists(Args[i+1]) == false {
+          sErr := fmt.Sprintf("\n[i] File For Argument: %s Not Found", Arg) 
+          err := errors.New(sErr)
+          return err
+        }
+
+      default:
+        return nil
+    }
+  } 
+  return nil
+}
+
 // Create File or Dir
 func CreateFile(name string) error {
   fPath := fmt.Sprintf("./%s", name)
