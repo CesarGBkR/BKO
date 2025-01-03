@@ -185,25 +185,25 @@ func FUZZ(Command Interfaces.Command) (Interfaces.Command, error) {
   cRequests:=  make(chan Interfaces.Request) 
 
   // Argument Management
-  for _, Arg := range Arguments {
+  for Flag, Details := range Arguments {
 
-    if Arg == "-u" {
-      URLS = append(URLS, Arguments["-u"])
+    if Flag == "-u" {
+      URLS = append(URLS, Details)
     }
-    if Arg == "-d" {
-      URLS, err = Controllers.Reader(Arguments["-d"])
+    if Flag == "-d" {
+      URLS, err = Controllers.Reader(Details)
       if err != nil {
         return Command, err
       }
     }
-    if Arg == "-T"{
-      Threats, err = strconv.Atoi(Arguments["-T"])
+    if Flag == "-T"{
+      Threats, err = strconv.Atoi(Details)
       if err != nil {
         return Command, err
       }
     }
-    if Arg == "-X" {
-      Method = Arguments["-X"] 
+    if Flag == "-X" {
+      Method = Details 
     }
   }
   

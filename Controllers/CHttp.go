@@ -140,17 +140,21 @@ func Extract(re regexp.Regexp, findOn string) ([][]string, error){
 func RequestURL (Method, URL string) (http.Response, error) {
 	body := bytes.NewBuffer([]byte(`{"key":"value"}`))
   req, err := http.NewRequest(Method, URL, body)
-
+  // TODO: ADD Headers Mngmnt
   // if len(Headers) > 0 {
   //   for key, value := range Headers {
   //     req.Header.Add(key, value)
   //   }
-  // }
-  
+  // } 
 	client := &http.Client{}
 
-	res, err := client.Do(req)
+  res, err := client.Do(req)
   if err != nil {
+    res := &http.Response{
+      StatusCode: 0,
+      ContentLength: 0,
+      Body: nil,
+    }
 		return *res, err 
 	}
   return *res, nil
