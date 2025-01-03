@@ -2,7 +2,8 @@ package View
 
 import (
   "fmt"
-  // "errors"
+  "errors"
+  "strings"
 
   "Requester/Interfaces"
   "Requester/Domain"
@@ -59,10 +60,10 @@ func IShell(){
       Help: Command.Help,
       LongHelp: Command.LongHelp,
       Func: func(c *ishell.Context) {
-        var Arguments map[string]string
+        Arguments := make(map[string]string)
 
         if len(c.Args) > 0 {
-          Command.ArgumentsRaw := c.Args  
+          Command.ArgumentsRaw = c.Args  
         } else {
           serr := fmt.Sprintf("\n[i]No Arguments For Command")
           err := errors.New(serr)
@@ -75,9 +76,14 @@ func IShell(){
           c.Printf(informer)
           return
         }
-        for i, Argument := COmmand.ArgumentsRaw {
-          Arguments[Argument] = Argument[i+1]
+        for i, Argument := range Command.ArgumentsRaw {
+          
+          if contains := strings.Contains(Argument, "-"); contains == true {
+            Arguments[Argument] = Command.ArgumentsRaw[i+1]
+          }
+          
         }
+        Command.Arguments = Arguments
         _, err := Domain.CommandSwitcher(Command) 
 
         if err != nil {

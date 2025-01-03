@@ -115,6 +115,7 @@ func RequestFUZZ(id int, Requests <-chan Interfaces.Request, wg *sync.WaitGroup,
 
 func RequestAll(Command Interfaces.Command) (Interfaces.Command, error) {
   
+  Arguments := Command.Arguments
   // Verify Argument
   Filter, Match, FCodes, MCodes, err := Controllers.ValidateFilterAndMatchArgs(Command.Arguments)
   if err != nil {
@@ -142,7 +143,7 @@ func RequestAll(Command Interfaces.Command) (Interfaces.Command, error) {
   cRequests:=  make(chan Interfaces.Request) 
   
   // Read file with URLs to Request
-  URLS, err := Controllers.Reader(Command.Arguments[0])
+  URLS, err := Controllers.Reader(Arguments["-f"])
 
   if err != nil {
     serr :=  fmt.Sprintf("Error:\n%v", err)
@@ -205,6 +206,7 @@ func FUZZ(Command Interfaces.Command) (Interfaces.Command, error) {
       Method = Arguments["-X"] 
     }
   }
+  
   Wordlist, err = Controllers.Reader(Arguments["-w"])
   if err != nil {
     return Command, err

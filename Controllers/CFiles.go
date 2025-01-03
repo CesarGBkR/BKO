@@ -12,29 +12,15 @@ func ValidateFileArguments(Args []string) error {
     return err 
   }
   for i, Arg := range Args {
-    switch Arg {
-      case "-w" :
-        if Args[i+1] == "" {
-          err := errors.New("\n[i] No File Specified in Argument")
-          return err
-        }else if FileExists(Args[i+1]) == false {
-          sErr := fmt.Sprintf("\n[i] File For Argument: %s Not Found", Arg) 
-          err := errors.New(sErr)
-          return err
-        } 
-       
-      case "-d" :
-        if Args[i+1] == "" {
-          err := errors.New("\n[i] No File Specified in Argument")
-          return err
-        }else if FileExists(Args[i+1]) == false {
-          sErr := fmt.Sprintf("\n[i] File For Argument: %s Not Found", Arg) 
-          err := errors.New(sErr)
-          return err
-        }
-
-      default:
-        return nil
+    if (Arg == "-d" ) || (Arg == "-w" ) || (Arg == "-f" ){
+      if Args[i+1] == "" {
+        err := errors.New("\n[i] No File Specified in Argument")
+        return err
+      }else if FileExists(Args[i+1]) == false {
+        sErr := fmt.Sprintf("\n[i] File For Argument: %s Not Found", Arg) 
+        err := errors.New(sErr)
+        return err
+      } 
     }
   } 
   return nil

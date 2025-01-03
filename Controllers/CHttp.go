@@ -71,24 +71,24 @@ func ValidateRequestArgs(Args []string) error {
   return nil
 }
 
-func ValidateFilterAndMatchArgs(Args []string)(bool, bool, []int, []int, error){
+func ValidateFilterAndMatchArgs(Arguments map[string]string)(bool, bool, []int, []int, error){
   
   Filter := false
   Match := false
   var FCodes []int
   var MCodes []int  
 
-  if len(Args) < 0 {
+  if len(Arguments) < 0 {
     err := errors.New("[i] No Arguments To eval")
     return Filter, Match, FCodes, MCodes, err 
-  } 
-  for i, Arg := range Args {
-    switch Arg {
+  }
+  for Flag, Details := range Arguments {
+    switch Flag {
       case "-fc":
         Filter = true
-        contains := strings.Contains(Args[i+1], ",")
+        contains := strings.Contains(Details, ",")
         if contains == true {
-          sFCodes := strings.Split(Args[i+1], ",")
+          sFCodes := strings.Split(Details, ",")
           for _, FCode := range sFCodes {
             iFCode, err := strconv.Atoi(FCode)
             if err == nil {
@@ -97,17 +97,17 @@ func ValidateFilterAndMatchArgs(Args []string)(bool, bool, []int, []int, error){
             fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", FCode )
           }
         }
-        iFCode, err := strconv.Atoi(Args[i+1])
+        iFCode, err := strconv.Atoi(Arguments["-fc"])
         if err != nil {
-          fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", Args[i+1] )
+          fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", Details )
         }
         FCodes = append(FCodes, iFCode)
 
       case "-mc":
         Match = true
-        contains := strings.Contains(Args[i+1], ",")
+        contains := strings.Contains(Details, ",")
         if contains == true {
-          sMCodes := strings.Split(Args[i+1], ",")
+          sMCodes := strings.Split(Details, ",")
           for _, MCode := range sMCodes {
             iMCode, err := strconv.Atoi(MCode)
             if err == nil {
@@ -116,9 +116,9 @@ func ValidateFilterAndMatchArgs(Args []string)(bool, bool, []int, []int, error){
             fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", MCode )
           }
         }
-        iMCode, err := strconv.Atoi(Args[i+1])
+        iMCode, err := strconv.Atoi(Arguments["-mc"])
         if err != nil {
-          fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", Args[i+1] )
+          fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", Details )
         }
         MCodes = append(MCodes, iMCode)
       default:
