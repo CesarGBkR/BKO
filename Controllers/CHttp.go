@@ -10,6 +10,30 @@ import (
   "bytes"
 )
 
+func EvalFiltersAndMatchs(Code int, List []int, Type string) bool {
+  Pass := false 
+  if len(List) > 0 {
+    switch Type {
+    case "Filter":
+      for _, FCode := range List {
+        if Code == FCode {
+          continue
+        }
+        // Manage Print Response Info 
+        Pass = true
+      }
+    case "Match":
+      for _, MCode := range List {
+        if Code == MCode {
+          continue
+        }
+        Pass = true
+      }
+    }  
+  }
+  return Pass
+}
+
 func MethodValidation(Args []string) error {
   if len(Args) < 0 {
     err := errors.New("\n [i] No Arguments To eval")
@@ -71,61 +95,62 @@ func ValidateRequestArgs(Args []string) error {
   return nil
 }
 
-func ValidateFilterAndMatchArgs(Arguments map[string]string)(bool, bool, []int, []int, error){
+func Foo (Details string) []int {
+  var List []int
+
+  contains := strings.Contains(Details, ",")
+  if contains == true {
+      Elements := strings.Split(Details, ",")
+    for _, Element := range Elements {
+      iElement, err := strconv.Atoi(Element)
+      if err == nil {
+        List = append(List, iElement)
+      }
+      fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", Element )
+    }
+  }
+  iElement, err := strconv.Atoi(Details)
+  if err != nil {
+    fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", Details )
+  }
+  List = append(List, iElement)
+  return List
+}
+
+func ValidateFilterAndMatchArgs(Arguments map[string]string)(bool, bool, []int, []int, []int, []int, error){
   
   Filter := false
   Match := false
+
   var FCodes []int
   var MCodes []int  
+  var FLength []int
+  var MLength []int  
 
   if len(Arguments) < 0 {
     err := errors.New("[i] No Arguments To eval")
-    return Filter, Match, FCodes, MCodes, err 
+    return Filter, Match, FCodes, MCodes, FLength, MLength, err 
   }
+
   for Flag, Details := range Arguments {
     switch Flag {
       case "-fc":
         Filter = true
-        contains := strings.Contains(Details, ",")
-        if contains == true {
-          sFCodes := strings.Split(Details, ",")
-          for _, FCode := range sFCodes {
-            iFCode, err := strconv.Atoi(FCode)
-            if err == nil {
-              FCodes = append(FCodes, iFCode)
-            }
-            fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", FCode )
-          }
-        }
-        iFCode, err := strconv.Atoi(Arguments["-fc"])
-        if err != nil {
-          fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", Details )
-        }
-        FCodes = append(FCodes, iFCode)
-
+        FCodes = Foo(Details)     
       case "-mc":
         Match = true
-        contains := strings.Contains(Details, ",")
-        if contains == true {
-          sMCodes := strings.Split(Details, ",")
-          for _, MCode := range sMCodes {
-            iMCode, err := strconv.Atoi(MCode)
-            if err == nil {
-              MCodes = append(MCodes, iMCode)
-            }
-            fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", MCode )
-          }
-        }
-        iMCode, err := strconv.Atoi(Arguments["-mc"])
-        if err != nil {
-          fmt.Printf("\n[i] Error Converting S to I Filter Code: %s", Details )
-        }
-        MCodes = append(MCodes, iMCode)
+        MCodes = Foo(Details) 
+      case "-fl":
+        Filter = true
+        FLength = Foo(Details)
+      case "-ml":
+        Filter = true
+        MLength = Foo(Details)
       default:
-        return Filter, Match, FCodes, MCodes, nil
+        return Filter, Match, FCodes, MCodes, FLength, MLength, nil
     }
   }
-  return Filter, Match, FCodes, MCodes, nil
+  return Filter, Match, FCodes, MCodes, FLength, MLength, nil
 }
 
 func Extract(re regexp.Regexp, findOn string) ([][]string, error){
